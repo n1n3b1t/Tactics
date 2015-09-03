@@ -1,7 +1,7 @@
 var Hero = function (game,key) {
   Phaser.Sprite.call(this, game, 0, 0, key);
-  this.width=40;
-  this.height=40;
+  this.width=90;
+  this.height=90;
   this.cellX=0;
   this.cellY=0;
 
@@ -21,6 +21,9 @@ Hero.prototype.select = function (selected) {
 
 }
 Hero.prototype.setPositionCell = function (cell) {
-    this.x= cell.x+cell.width/2-this.width/2;
-    this.y = cell.y+cell.height/2-this.height/2;
+    var newX= cell.x+cell.width/2-this.width/2;
+    var newY = cell.y+cell.height/2-this.height/2;
+    var tween = this.game.add.tween(this);
+    tween.to({x:newX,y:newY},150);
+    tween.start();
 }

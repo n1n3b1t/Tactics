@@ -23,10 +23,7 @@ TacticsGame.prototype = {
           tileset[j][i] = sprite;
           var self = this;
           sprite.events.onInputDown.add(function () {
-            self.selected.select(false);
-            self.selected = this;
-            self.selected.select(true);
-            hero.setPositionCell(this);
+            self.selectTile(this);
           },sprite);
 
       }
@@ -34,49 +31,18 @@ TacticsGame.prototype = {
     hero = new Hero(game,"hero");
     game.add.existing(hero);
     cursors = game.input.keyboard.createCursorKeys();
-    this.selected =tileset[0][0];
+
+    this.selectTile(tileset[0][0]);
   },
   update:function () {
-    if (cursors.right.isDown && prevDirection!='right')
-    {
-      this.selectTile('right');
-    }
-    else if (cursors.left.isDown && prevDirection!='left')
-    {
-        this.selectTile('left');
-    }
-    else if (cursors.up.isDown && prevDirection!='up')
-    {
-        this.selectTile('up');
-    }
-    else if (cursors.down.isDown && prevDirection!='down')
-    {
-        this.selectTile('down');
-    }
+
   },
-  selectTile:function (direction) {
-    console.log(direction);
-    var unselect = this.selected;
-    prevDirection = direction;
-    if(direction==='right'){
-      if(this.selected.cellX<8){
-        this.selected = tileset[this.selected.cellX+1][this.selected.cellY];
-      }
-    }else if (direction === 'left'){
-      if(this.selected.cellX>0){
-        this.selected = tileset[this.selected.cellX-1][this.selected.cellY];
-      }
-    }else if (direction === 'up'){
-      if(this.selected.cellY>0){
-        this.selected = tileset[this.selected.cellX][this.selected.cellY-1];
-      }
-    }else if (direction === 'down'){
-      if(this.selected.cellY<8){
-        this.selected = tileset[this.selected.cellX][this.selected.cellY1];
-      }
-    }
-    unselect.select(false);
-    this.selected.select(true);
+  selectTile:function (tile) {
+    if(self.selected)
+      self.selected.select(false);
+    self.selected = tile;
+    self.selected.select(true);
+    hero.setPositionCell(tile);
   }
 }
 
