@@ -22,10 +22,10 @@ TacticsGame.prototype = {
     // game.add.sprite(0,0,"tile");
     for (var i = 0; i < 8; i++) {
       for (var j = 0; j < 8; j++) {
-          var sprite = game.add.existing(new Tile(game,"tile",j,i));
+          var sprite = game.add.existing(new Tile(game,j,i));
           tileset[j][i] = sprite;
           var self = this;
-          sprite.events.onInputDown.add(function () {
+          sprite.mainSprite.events.onInputDown.add(function () {
             self.selectTile(this);
           },sprite);
 
@@ -33,7 +33,7 @@ TacticsGame.prototype = {
     }
     hero = new Hero(game,"hero");
     game.add.existing(hero);
-    cursors = game.input.keyboard.createCursorKeys();
+
     var enemy = new Enemy(game,"enemy");
     enemies.push(enemy);
     game.add.existing(enemy);
