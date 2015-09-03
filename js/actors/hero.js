@@ -24,6 +24,6 @@ Hero.prototype.setPositionCell = function (cell) {
     var newX= cell.x+cell.width/2-this.width/2;
     var newY = cell.y+cell.height/2-this.height/2;
     var tween = this.game.add.tween(this);
-    tween.to({x:newX,y:newY},150,Phaser.Easing.Elastic.In);
+    tween.to({x:newX,y:newY},1500,Phaser.Easing.Elastic.InOut);
     tween.start();
 }
