@@ -1,5 +1,6 @@
 var game = new Phaser.Game(1000, 700, Phaser.AUTO, 'game');
 var cursors,tileset,selected,prevDirection,hero;
+var enemies=new Array();
 var TacticsGame = function(){
 
 
@@ -12,8 +13,10 @@ TacticsGame.prototype = {
     this.selected = undefined;
   },
   preload:function () {
-    game.load.image("tile","/img/main_tile.jpg");
+    game.load.image("tile","/img/main_tile.png");
+    game.load.image("tile_overlay","/img/main_tile_selected.png");
     game.load.image("hero","/img/hero.png");
+    game.load.image("enemy","/img/enemy.png");
   },
   create:function () {
     // game.add.sprite(0,0,"tile");
@@ -31,13 +34,25 @@ TacticsGame.prototype = {
     hero = new Hero(game,"hero");
     game.add.existing(hero);
     cursors = game.input.keyboard.createCursorKeys();
-
+    var enemy = new Enemy(game,"enemy");
+    enemies.push(enemy);
+    game.add.existing(enemy);
+    enemy.setPositionCell(tileset[4][4]);
+    enemy = new Enemy(game,"enemy");
+    enemies.push(enemy);
+    game.add.existing(enemy);
+    enemy.setPositionCell(tileset[6][6]);
     this.selectTile(tileset[0][0]);
   },
   update:function () {
 
   },
   selectTile:function (tile) {
+    enemies.forEach(function (enemy) {
+      if(enemy.cellX==tile.cellX && enemy.cellY ==tile.cellY){
+        alert('attack');
+      }
+    });
     if(self.selected)
       self.selected.select(false);
     self.selected = tile;
