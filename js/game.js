@@ -1,5 +1,5 @@
 var game = new Phaser.Game(1000, 700, Phaser.AUTO, 'game');
-var cursors, tileset, selected, prevDirection, hero, isoGroup, heroes;
+var cursors, tileset, selected, prevDirection, hero, isoGroup, heroes, graph;
 var enemies = new Array();
 var TacticsGame = function() {
 
@@ -9,8 +9,7 @@ var TacticsGame = function() {
 TacticsGame.prototype = {
 
   init: function() {
-    tileset = Create2DArray(8);
-    this.selected = undefined;
+
   },
   preload: function() {
     game.load.image("tile", "/img/tile2.png");
@@ -56,9 +55,7 @@ TacticsGame.prototype = {
     // this.selectTile(tileset[0][0]);
   },
   update: function() {
-    isoGroup.forEach(function (tile) {
-      hero.canGetToLocation(tile);
-    });
+
 
   },
   selectTile: function(tile) {
@@ -75,29 +72,51 @@ TacticsGame.prototype = {
   },
   spawnTiles: function() {
     var tile;
+    var grid = [];
     for (var xx = 0; xx < 512; xx += 38) {
+      var row = [];
       for (var yy = 0; yy < 512; yy += 38) {
         // Create a tile using the new game.add.isoSprite factory method at the specified position.
         // The last parameter is the group you want to add it to (just like game.add.sprite)
+        var isWall = Math.floor(Math.random() * 5);
+
         tile = game.add.isoSprite(xx, yy, 0, 'tile', 0, isoGroup);
         tile.inputEnabled = true;
         tile.anchor.set(0.5, 0);
+        tile.cellX = xx / 38;
+        tile.cellY = yy / 38;
+        if (isWall == 0) {
+
+          row.push(GraphNodeType.WALL);
+          tile.isWall = true;
+          tile.tint = 0xff0000;
+          console.log(GraphNodeType.WALL);
+        } else {
+          row.push(GraphNodeType.OPEN);
+          tile.isWall = false;
+        }
         tile.events.onInputOver.add(function() {
-          this.tint = 0x86bfda;
+          if (!this.isWall)
+            this.tint = 0x86bfda;
         }, tile);
         tile.events.onInputOut.add(function() {
-          this.tint = 0xffffff;
+          if (this.isWall) {
+            tile.tint = 0xff0000;
+          } else {
+            this.tint = 0xffffff;
+          }
+
         }, tile);
+        var self = this;
         tile.events.onInputDown.add(function() {
-          var tween = this.game.add.tween(hero);
-          tween.to({
-            isoX: this.isoX,
-            isoY: this.isoY
-          }, 200, Phaser.Easing.Quadratic.InOut, true);
-          tween.start();
+
+          self.searchPath(this);
 
         }, tile);
       }
+      grid.push(row);
+
+      graph = new Graph(grid);
     }
   },
   createHero: function() {
@@ -106,7 +125,65 @@ TacticsGame.prototype = {
     hero.width = 56;
     hero.height = 56;
     hero.anchor.set(0.5, 0.5);
+  },
+  tileElement: function(node) {
+    var neededTile=null;
+    isoGroup.forEach(function(tile) {
+      if (tile.cellX == node.x && tile.cellY == node.y)
+        neededTile=tile;
+
+    });
+    return neededTile;
+  },
+  graphElement: function(tile) {
+    return graph.nodes[tile.cellX][tile.cellY];
+  },
+  searchPath: function(tile) {
+    var start = this.graphElement(hero);
+    var end = this.graphElement(tile);
+
+    var path = astar.search(graph.nodes, start, end);
+
+    this.goToCell(path);
+
+  },
+  goToCell: function(path) {
+
+
+    var firstTween,tween=null;
+    for (var i = 0; i < path.length; i++) {
+      var tile = this.tileElement(path[i]);
+      console.log(tile.isoX + ' ' +tile.isoY);
+      if(tween==null){
+        tween = this.chainTween(tile);
+        firstTween = tween;
+      }else{
+        var newTween = this.chainTween(tile);
+        tween.chain(newTween);
+        tween = newTween;
+      }
+      if(i==path.length-1){
+        hero.cellX=tile.cellX;
+        hero.cellY=tile.cellY;
+      }
+
+    }
+
+    firstTween.start();
+
+
+
+  },
+  chainTween:function (tile) {
+    var tween = game.add.tween(hero);
+    tween.to({
+      isoX: tile.isoX,
+      isoY: tile.isoY
+    }, 100, "Quart.easeOut",false);
+      return tween;
+    ;
   }
+
 
 }
 

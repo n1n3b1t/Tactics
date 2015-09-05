@@ -4,6 +4,8 @@ var Hero = function (game) {
   this.stamina=100;
   this.staminaMax=100;
   this.staminaPerMove=30;
+  this.cellX=0;
+  this.cellY=0;
 
 
 }
