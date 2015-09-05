@@ -1,22 +1,22 @@
 
 var Tile = function (game,x,y) {
   Phaser.Group.call(this,game);
-  this.width=80;
-  this.height=80;
-  this.x = 180+x*80;
-  this.y = 30+y*80;
+  this.width=70;
+  this.height=40;
+  this.x = 180+x*38;
+  this.y = 30+y*38;
   console.log(this.x +'___' + this.y);
   this.cellX = x;
   this.cellY = y;
   this.mainSprite = this.create(0,0,"tile");
   this.mainSprite.inputEnabled = true;
   // this.add(this.mainSprite);
-  this.mainSprite.width = 80;
-  this.mainSprite.height =80;
+  this.mainSprite.width = 70;
+  this.mainSprite.height =40;
 
   this.overlaySprite = this.create(0,0,"tile_overlay");
-  this.overlaySprite.width = 80;
-  this.overlaySprite.height = 80;
+  this.overlaySprite.width = 70;
+  this.overlaySprite.height = 40;
   this.overlaySprite.alpha=0;
   // this.add(this.overlaySprite);
 
